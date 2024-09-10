@@ -5,7 +5,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const Profile = () => {
   return (
     <>
-      <Text>Headers</Text>
+      <Text>Profile</Text>
       
       <Text>Footers</Text>
     </>
