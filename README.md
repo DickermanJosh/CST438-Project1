@@ -13,3 +13,6 @@ Libraries:
 expo-sqlite - https://www.npmjs.com/package/expo-sqlite
 jest-expo - https://www.npmjs.com/package/jest-expo
 expo - https://www.npmjs.com/package/expo
+nativewind - https://www.nativewind.dev/v4/getting-started/react-native
+
+
