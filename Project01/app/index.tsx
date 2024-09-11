@@ -3,12 +3,37 @@ import { StatusBar } from "expo-status-bar";
 import React from 'react';
 import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from "react-native-safe-area-context";
+  
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SignUpScreen from './SignUpScreen';
+import LoginScreen from './LoginScreen';
+import Home from './Home';
 
 import{images} from "../constants";
 import CustomButton from "@/components/CustomButton";
+  
+// Create a Stack navigator
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
+    // The NavigationContainer wraps the entire navigation structure
+    // Stack navigator from loginPage merge
+      <Stack.Navigator initialRouteName="Login">        
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ title: 'Login' }}
+        />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUpScreen}
+          options={{ title: 'Sign Up' }}
+        />
+        <Stack.Screen name="Home" component={Home} />
+      </Stack.Navigator>
+    
     <SafeAreaView className="bg-primary h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Text className="text-center text-white">Welcome to my App!</Text>
