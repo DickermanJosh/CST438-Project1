@@ -3,6 +3,7 @@ import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { db } from './db'; // Import your SQLite setup
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { router } from 'expo-router';
 
 // Define the navigation prop types
 type RootStackParamList = {
@@ -42,11 +43,12 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
         [username, password],
         () => {
           Alert.alert('Success', 'User registered successfully');
-          navigation.navigate('Login'); 
+          router.push('/LoginScreen'); 
         },
         (tx, error) => {
           Alert.alert('Error', 'User not registered');
           console.log('Error inserting user:', error);
+          return true; 
         }
       );
     });
