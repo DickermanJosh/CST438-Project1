@@ -20,6 +20,7 @@ export default function App() {
   return (
     // The NavigationContainer wraps the entire navigation structure
     // Stack navigator from loginPage merge
+    <>
       <Stack.Navigator initialRouteName="Login">        
         <Stack.Screen
           name="Login"
@@ -36,7 +37,7 @@ export default function App() {
     
     <SafeAreaView className="bg-primary h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <Text className="text-center text-white">Welcome to my App!</Text>
+        <Text className="text-center text-white">Welcome to our App!</Text>
         <View className="w-full justify-center items-center min-h-[85vh] px-4">
           <Image
           source={images.logo}
@@ -58,8 +59,8 @@ export default function App() {
            
               <CustomButton
                 title="Login"
-                handlePress={() => {router.push('/home')}}
-                // handlePress={() => {router.push('/sign-in')}}
+                // handlePress={() => {router.push('/home')}}
+                handlePress={() => {router.push('/LoginScreen')}}
                 containerStyles="w-full mt-7"
               />
            
@@ -70,5 +71,6 @@ export default function App() {
       </ScrollView>
       <StatusBar backgroundColor="#161622" style='light'/>
     </SafeAreaView>
+    </>
   );
 }
