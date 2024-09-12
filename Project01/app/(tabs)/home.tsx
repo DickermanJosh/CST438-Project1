@@ -8,7 +8,7 @@ import SearchInput from '../../components/SearchInput'
 
 const Home = () => {
   return (
-    <SafeAreaView className="bg-primary">
+    <SafeAreaView className="bg-primary h-full">
       <FlatList
         data={[{ id:1 }]}
         keyExtractor={(item) => item.id.toString() }
@@ -31,7 +31,7 @@ const Home = () => {
                 <Image
                   source={images.logo}
                   className='w-14 h-10'
-                  // resizeMode="contain"
+                  resizeMode="contain"
                 />
                 <View></View>
               </View>
