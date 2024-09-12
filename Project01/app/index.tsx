@@ -20,6 +20,7 @@ export default function App() {
   return (
     // The NavigationContainer wraps the entire navigation structure
     // Stack navigator from loginPage merge
+    <>
       <Stack.Navigator initialRouteName="Login">        
         <Stack.Screen
           name="Login"
@@ -70,5 +71,6 @@ export default function App() {
       </ScrollView>
       <StatusBar backgroundColor="#161622" style='light'/>
     </SafeAreaView>
+    </>
   );
 }
