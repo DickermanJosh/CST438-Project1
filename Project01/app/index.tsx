@@ -37,7 +37,7 @@ export default function App() {
     
     <SafeAreaView className="bg-primary h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <Text className="text-center text-white">Welcome to my App!</Text>
+        <Text className="text-center text-white">Welcome to our App!</Text>
         <View className="w-full justify-center items-center min-h-[85vh] px-4">
           <Image
           source={images.logo}
@@ -59,8 +59,8 @@ export default function App() {
            
               <CustomButton
                 title="Login"
-                handlePress={() => {router.push('/home')}}
-                // handlePress={() => {router.push('/sign-in')}}
+                // handlePress={() => {router.push('/home')}}
+                handlePress={() => {router.push('/LoginScreen')}}
                 containerStyles="w-full mt-7"
               />
            
