@@ -5,11 +5,14 @@ import { Redirect, router } from 'expo-router';
 import { db } from './db'; // Import your SQLite setup
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import SignUpScreen from './SignUpScreen';
+import { router } from 'expo-router';
 
 // Define the navigation prop types
 type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
+  Home: { user: any };
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<
@@ -34,10 +37,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         'SELECT * FROM user WHERE username = ?',
         [username],
         async (tx, results) => {
-          console.log("Results",results)
+          console.log("Results", results);
           if (results.rows.length > 0) {
             const storedUser = results.rows.item(0);
-            const passwordMatch = password === storedUser.password ? true : false;
+            const passwordMatch = password === storedUser.password;
 
             if (passwordMatch) {
               Alert.alert('Success', 'Login successful');
@@ -55,6 +58,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         },
         (tx, error) => {
           console.log('Error querying user:', error);
+          return true;
         }
       );
     });
@@ -79,16 +83,25 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         secureTextEntry
         style={styles.input}
       />
-      <Button title="Login" onPress={handleLogin} style={styles.buttonContainer} />
-
-      <Button title="Sign Up" onPress={handleNavigation} style={styles.buttonContainer} />
+      {/* Wrap Buttons in a View to style */}
+      <View style={styles.buttonContainer}>
+        <Button title="Login" onPress={handleLogin} />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button title="Sign Up" onPress={handleNavigation} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { padding: 16, marginTop: 10, gap: 10 },
-  input: { borderBottomWidth: 1, marginBottom: 16 },  
+  input: { borderBottomWidth: 1, marginBottom: 16 },
+  buttonContainer: {
+    marginVertical: 10,
+    borderRadius: 5, // Optional: for rounded corners
+    overflow: 'hidden', // Ensures the button has rounded corners
+  },
 });
 
 export default LoginScreen;

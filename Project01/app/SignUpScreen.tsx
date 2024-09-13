@@ -48,6 +48,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
         (tx, error) => {
           Alert.alert('Error', 'User not registered');
           console.log('Error inserting user:', error);
+          return true; 
         }
       );
     });
