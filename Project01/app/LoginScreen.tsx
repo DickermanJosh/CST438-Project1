@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { Redirect, router } from 'expo-router';
 
 import { db } from './db'; // Import your SQLite setup
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -41,7 +42,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             if (passwordMatch) {
               Alert.alert('Success', 'Login successful');
               // Navigate to home or dashboard
-              navigation.navigate('Home', { user: storedUser })
+              router.push({
+                pathname: '/home',
+                params: { user: JSON.stringify(storedUser) }, // Pass user data as a string
+              });
             } else {
               Alert.alert('Error', 'Invalid username or password');
             }
@@ -57,7 +61,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleNavigation = () => {
-    navigation.navigate('SignUp')
+    router.push('/SignUpScreen');
   };
 
   return (
