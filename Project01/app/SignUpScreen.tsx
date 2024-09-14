@@ -3,7 +3,7 @@ import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { db } from './db'; // Import your SQLite setup
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 
 // Define the navigation prop types
 type RootStackParamList = {
