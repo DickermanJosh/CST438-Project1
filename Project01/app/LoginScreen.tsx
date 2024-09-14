@@ -6,7 +6,6 @@ import { db } from './db'; // Import your SQLite setup
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import SignUpScreen from './SignUpScreen';
-import { router } from 'expo-router';
 
 // Define the navigation prop types
 type RootStackParamList = {
