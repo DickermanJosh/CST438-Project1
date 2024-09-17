@@ -25,14 +25,17 @@ export default function App() {
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{ title: 'Login' }}
+          options={{ title: 'Login', headerShown: false }}
+          
+          
         />
         <Stack.Screen
           name="SignUp"
           component={SignUpScreen}
-          options={{ title: 'Sign Up' }}
+          options={{ title: 'Sign Up',headerShown: false  }}
         />
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Home" component={Home}
+         options={{ headerShown: false }}  />
       </Stack.Navigator>
     
     <SafeAreaView className="bg-primary h-full">
@@ -54,7 +57,7 @@ export default function App() {
           resizeMode="contain"
           />
           <Text className="text-sm font-pregular text-gray-100 mt-7 text-center">
-           Text</Text >
+           </Text >
 
            
               <CustomButton
