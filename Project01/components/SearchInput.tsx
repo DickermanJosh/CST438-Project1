@@ -53,6 +53,7 @@ const SearchInput = () => {
                     <Picker.Item label="Name" value="name" />
                     <Picker.Item label="Ability" value="ability" />
                     <Picker.Item label="Type" value="type" />
+                    <Picker.Item label="Species" value="species" />
                 </Picker>
             </View>
         </SafeAreaView>
