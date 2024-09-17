@@ -68,6 +68,7 @@ const TabsLayout = () => {
                   color={color}
                   name="Favorites"
                   focused={focused}
+                  
 
                   />
             
@@ -85,6 +86,7 @@ const TabsLayout = () => {
                   color={color}
                   name="Create"
                   focused={focused}
+             
 
                   />
                 ),
