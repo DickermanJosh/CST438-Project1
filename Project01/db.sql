@@ -1,11 +1,11 @@
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE IF NOT EXISTS user (
     userID INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
     password TEXT NOT NULL,
     team TEXT
 );
 
-CREATE TABLE IF NOT EXISTS Pokemon (
+CREATE TABLE IF NOT EXISTS pokemon (
     pokemonID INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     picture TEXT
@@ -14,6 +14,6 @@ CREATE TABLE IF NOT EXISTS Pokemon (
 CREATE TABLE IF NOT EXISTS UsersToPokemon (
     userID INTEGER,
     pokemonID INTEGER, 
-    FOREIGN KEY (userID) REFERENCES Users(userID),
-    FOREIGN KEY (pokemonID) REFERENCES Pokemon(pokemonID)
+    FOREIGN KEY (userID) REFERENCES user(userID),
+    FOREIGN KEY (pokemonID) REFERENCES pokemon(pokemonID)
 );

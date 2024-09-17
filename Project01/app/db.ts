@@ -34,8 +34,130 @@ const listAllUsers = () => {
 	});
 };
 
+const createPokemonTable = async () => {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'CREATE TABLE IF NOT EXISTS pokemon (pokemonID INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, picture TEXT); ',
+          [],
+          () => {
+            resolve("Pokemon table created succesfully");
+          },
+          (tx, error) => {
+            reject(error); // Reject the promise on error
+            return false;
+          }
+        );
+      });
+    });
+};
+
+const listAllPokemon = async () => {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'SELECT * FROM pokemon',
+          [],
+          (tx, results) => {
+            const pokemon = results.rows._array;
+            console.log(pokemon);
+            resolve(pokemon);
+          },
+          (tx, error) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+};
+
+const createPokemonToUsersTable = async () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS UsersToPokemon (userID INTEGER, pokemonID INTEGER, FOREIGN KEY (userID) REFERENCES user(userID), FOREIGN KEY (pokemonID) REFERENCES pokemon(pokemonID));',
+        [],
+        () => {
+          resolve("Pokemon to users table created succesfully");
+        },
+        (tx, error) => {
+          reject(error); // Reject the promise on error
+          return false;
+        }
+      );
+    });
+  });
+};
+
+const listAllUsersToPokemon = async () => {
+      return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+          tx.executeSql(
+            'SELECT * FROM UsersToPokemon',
+            [],
+            (tx, results) => {
+              const usersToPokemon = results.rows._array;
+              console.log(usersToPokemon);
+              resolve(usersToPokemon);
+            },
+            (tx, error) => {
+              reject(error);
+              return false;
+            }
+          );
+        });
+      });
+  };
+
+const deleteAllUsersToPokemon = async () => {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'DELETE * FROM UsersToPokemon',
+          [],
+          (tx, results) => {
+            const usersToPokemon = results.rows._array;
+            // console.log(usersToPokemon);
+            resolve(usersToPokemon);
+          },
+          (tx, error) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+};
+
+const deletePokemon = async () => {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'DELETE * FROM pokemon',
+          [],
+          (tx, results) => {
+            const pokemon = results.rows._array;
+            // console.log(usersToPokemon);
+            resolve(pokemon);
+          },
+          (tx, error) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+};
+
 // Run createTable to ensure the table is created
 createUserTable();
 listAllUsers();
+createPokemonTable();
+listAllPokemon();
+createPokemonToUsersTable();
+listAllUsersToPokemon();
+// deleteAllUsersToPokemon(); did not work 
+// deletePokemon(); did not work
 
 export { db };
