@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 
 
 const RootLayout = () => {
+  // Importing assests 
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -32,7 +33,16 @@ const RootLayout = () => {
 
   return (
     <Stack>
+      {/* Hides header from all pages
+      directory of screens */}
+
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="SignUpScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+   
+      
       
     </Stack>
   );

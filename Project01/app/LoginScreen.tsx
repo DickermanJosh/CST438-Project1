@@ -1,32 +1,16 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+
+import { View, TextInput, Button, Alert, StyleSheet ,Image, Text,TouchableOpacity  } from 'react-native';
+import { Redirect, router } from 'expo-router';
 
 import { db } from './db'; // Import your SQLite setup
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+ import { images } from '../constants';
 import SignUpScreen from './SignUpScreen';
-import { router } from 'expo-router';
 
-// Define the navigation prop types
-type RootStackParamList = {
-  Login: undefined;
-  SignUp: undefined;
-  Home: { user: any };
-};
 
-type LoginScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'Login'
->;
-
-type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Login'>;
-
-type Props = {
-  navigation: LoginScreenNavigationProp;
-  route: LoginScreenRouteProp;
-};
-
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const LoginScreen = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
@@ -36,14 +20,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         'SELECT * FROM user WHERE username = ?',
         [username],
         async (tx, results) => {
-          console.log("Results", results);
           if (results.rows.length > 0) {
             const storedUser = results.rows.item(0);
             const passwordMatch = password === storedUser.password;
 
             if (passwordMatch) {
               Alert.alert('Success', 'Login successful');
-              // Navigate to home or dashboard
               router.push({
                 pathname: '/home',
                 params: { user: JSON.stringify(storedUser) }, // Pass user data as a string
@@ -68,39 +50,48 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-primary justify-center px-5" style={{ backgroundColor: '#161622' }}>
+      {/* Image at the top */}
+      <View className="items-center mb-10">
+        <Image source={images.logo} className="w-[200px] h-[200px]" resizeMode="contain" />
+      </View>
+      <Text className="text-3xl text-secondary-200 text-center mb-8 font-bold">Log In</Text>
+
       <TextInput
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
-        style={styles.input}
+        className="border border-gray-400 rounded-lg p-3 mb-4 text-white bg-gray-800"
+        placeholderTextColor="#B3B3B3"
       />
       <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={styles.input}
+        className="border border-gray-400 rounded-lg p-3 mb-6 text-white bg-gray-800"
+        placeholderTextColor="#B3B3B3"
       />
-      {/* Wrap Buttons in a View to style */}
-      <View style={styles.buttonContainer}>
-        <Button title="Login" onPress={handleLogin} />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Sign Up" onPress={handleNavigation} />
-      </View>
+
+      {/* Login Button */}
+      <TouchableOpacity 
+        className="mb-4 bg-secondary-100 rounded-lg w-full mt-2" 
+        onPress={handleLogin} 
+        style={{  padding: 15, alignItems: 'center', borderRadius: 10 }}
+      >
+        <Text style={{ color: 'black', fontWeight: 'bold' }}>Login</Text>
+      </TouchableOpacity>
+
+      {/* Sign Up Button */}
+      <TouchableOpacity 
+        className="bg-secondary-100 rounded-lg w-full mt-2" 
+        onPress={handleNavigation} 
+        style={{  padding: 15, alignItems: 'center', borderRadius: 10 }}
+      >
+        <Text style={{ color: 'black', fontWeight: 'bold' }}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { padding: 16, marginTop: 10, gap: 10 },
-  input: { borderBottomWidth: 1, marginBottom: 16 },
-  buttonContainer: {
-    marginVertical: 10,
-    borderRadius: 5, // Optional: for rounded corners
-    overflow: 'hidden', // Ensures the button has rounded corners
-  },
-});
 
 export default LoginScreen;

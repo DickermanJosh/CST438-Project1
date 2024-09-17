@@ -1,29 +1,15 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, TextInput, Alert, Text, TouchableOpacity, Image } from 'react-native';
 import { db } from './db'; // Import your SQLite setup
+
+import { images } from '../constants';
+
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 
-// Define the navigation prop types
-type RootStackParamList = {
-  Login: undefined;
-  SignUp: undefined;
-};
 
-type SignUpScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'SignUp'
->;
-
-type SignUpScreenRouteProp = RouteProp<RootStackParamList, 'SignUp'>;
-
-type Props = {
-  navigation: SignUpScreenNavigationProp;
-  route: SignUpScreenRouteProp;
-};
-
-const SignUpScreen: React.FC<Props> = ({ navigation }) => {
+const SignUpScreen = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -32,58 +18,71 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match');
       return;
-    }  
+    }
 
-    console.log("sign up button pressed");
-
-    // Save user to SQLite
     db.transaction(tx => {
       tx.executeSql(
         'INSERT INTO user (username, password) VALUES (?, ?)',
         [username, password],
         () => {
           Alert.alert('Success', 'User registered successfully');
-          router.push('/LoginScreen'); 
+          router.push('/LoginScreen');
         },
         (tx, error) => {
           Alert.alert('Error', 'User not registered');
           console.log('Error inserting user:', error);
-          return true; 
+          return true;
         }
       );
     });
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-primary justify-center px-5" style={{ backgroundColor: '#161622' }}>
+        {/* Image at the top */}
+      <View className="items-center mb-10">
+        <Image source={images.logo} className="w-[200px] h-[200px]" resizeMode="contain" />
+      </View>
+
+
+      <Text className="text-3xl text-secondary-200 text-center mb-8 font-bold">Sign Up</Text>
+
       <TextInput
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
-        style={styles.input}
+        className="border border-gray-400 rounded-lg p-3 mb-4 text-white bg-gray-800"
+        placeholderTextColor="#B3B3B3"
       />
+
       <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={styles.input}
+        className="border border-gray-400 rounded-lg p-3 mb-4 text-white bg-gray-800"
+        placeholderTextColor="#B3B3B3"
       />
+
       <TextInput
         placeholder="Confirm Password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
-        style={styles.input}
+        className="border border-gray-400 rounded-lg p-3 mb-6 text-white bg-gray-800"
+        placeholderTextColor="#B3B3B3"
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+
+      {/* Sign Up Button */}
+      <TouchableOpacity
+        className="mb-4 bg-secondary-100 rounded-lg w-full mt-2"
+        onPress={handleSignUp}
+        style={{ padding: 15, alignItems: 'center', borderRadius: 10 }}
+      >
+        <Text style={{ color: 'black', fontWeight: 'bold' }}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { padding: 16 },
-  input: { borderBottomWidth: 1, marginBottom: 16 },
-});
 
 export default SignUpScreen;
