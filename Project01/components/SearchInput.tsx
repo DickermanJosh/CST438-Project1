@@ -1,12 +1,43 @@
 import { Image, View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { usePathname, router } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';  // Using Picker for dropdown menu
 import { icons } from '../constants';
 
 const SearchInput = () => {
     const pathname = usePathname();
+
+import { useState, useEffect } from 'react';
+import {icons} from '../constants'
+import { usePathname, router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+
+
+const SearchInput = () => {
+    const { user } = useLocalSearchParams();  
+    const [parsedUser, setParsedUser] = useState(null);
+
+  // Get users information from login page
+    useEffect(() => {
+        if (user) {
+        let userData;
+        if (Array.isArray(user)) {
+            userData = user[0];
+        } else {
+            userData = user;
+        }
+
+        // console.log(user);
+        // console.log("hello");
+        setParsedUser(JSON.parse(userData));
+        // console.log(parsedUser);
+        }
+    }, [user]);
+
+    const pathname = usePathname()
+
     const [query, setQuery] = useState('');
     const [searchType, setSearchType] = useState('name');  // default search type is by name
 
@@ -30,7 +61,11 @@ const SearchInput = () => {
                             router.setParams({ query, searchType });
                         } else {
                             // Sending the query & the type of search
-                            router.push(`/search/${query}?searchType=${searchType}`);
+//                             router.push(`/search/${query}?searchType=${searchType}`);
+                            router.push({
+                                pathname: `/search/${query}?searchType=${searchType}`, // Dynamic route
+                                params: { user: JSON.stringify(parsedUser) },
+                            });
                         }
                     }}
                 >
