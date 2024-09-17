@@ -42,99 +42,34 @@ const Search = () => {
       }
     };
     if (query) {
-      fetchData();  // Call the API only when query is available
+      fetchData();  
     }
-  }, [query]);  // useEffect will run again if `query` changes
-
-  // const handleFavorite = async () => {
-  //   db.transaction(tx => {
-  //     tx.executeSql(
-  //       'SELECT * FROM pokemon WHERE name = ?',
-  //       [query], 
-  //       (tx, results) => {
-  //         if (results.rows.length > 0) {
-  //           Alert.alert('Failure', 'Pokemon already favorited');
-  //         } else {
-  //           {data && user && data.sprites && (
-  //             // db.transaction(tx => {
-  //               tx.executeSql(
-  //                 'INSERT INTO pokemon (name, picture) VALUES (?, ?)',
-  //                 [query, data.sprites.front_default],
-  //                 (tx, results) => {
-  //                   Alert.alert('Success', 'Pokemon entered to database');
-  //                   // Alert.alert('Success', parsedUser);
-  //                   tx.executeSql(
-  //                     'SELECT * FROM pokemon WHERE name = ?',
-  //                     [query], 
-  //                     (tx, results) => {
-  //                       tx.executeSql(
-  //                         'SELECT * FROM UsersToPokemon WHERE pokemonID = ? AND userID = ?',
-  //                         [results.rows._array[0].pokemonID, parsedUser.id],
-  //                         (tx, results) => {
-  //                           if(results.rows.length > 0){
-  //                             Alert.alert('Failure', 'Pokemon is already favorited');
-  //                           } else {
-  //                             tx.executeSql(
-  //                               'INSERT INTO UsersToPokemon (userID, pokemonID) VALUES (?, ?)',
-  //                               [parsedUser.id, results.rows._array[0].pokemonID],
-  //                               (tx, results) => {
-  //                                 Alert.alert('Success', 'Pokemon added to user\'s favorites');
-  //                                 console.log("Insert successful");
-  //                               },
-  //                               (tx, error) => {
-  //                                 Alert.alert('Failure', 'Failed to add Pokemon to user\'s favorites');
-  //                                 // console.error('Insert error:', error);
-  //                                 return false;
-  //                               }
-  //                             );
-  //                           }
-  //                         }
-  //                       )
-  //                     }
-  //                   )
-  //                 },
-  //                 (tx, error) => {
-  //                   Alert.alert('Failure', 'Pokemon already exists');
-  //                   return false;
-  //                 }
-  //               )
-  //             // })
-  //           )}
-  //         }
-  //       },
-  //       (tx, error) => {
-  //         Alert.alert('Error', 'Failed to check Pokemon existence');
-  //       }
-  //     );
-  //   });
-  // }
+  }, [query]); 
+   
   const handleFavorite = async () => {
     db.transaction(tx => {
-      // First, check if the Pokemon exists in the "pokemon" table
       tx.executeSql(
         'SELECT * FROM pokemon WHERE name = ?',
         [query], 
         (tx, results) => {
           if (results.rows.length > 0) {
-            // If the Pokemon already exists in the database
             Alert.alert('Failure', 'Pokemon already favorited');
           } else {
-            // Insert the new Pokemon if it doesn't exist
+
             if (data && parsedUser && data.sprites) {
               tx.executeSql(
                 'INSERT INTO pokemon (name, picture) VALUES (?, ?)',
                 [query, data.sprites.front_default],
                 (tx, insertResult) => {
-                  // Get the newly inserted Pokemon's ID
+
                   tx.executeSql(
                     'SELECT * FROM pokemon WHERE name = ?',
                     [query], 
                     (tx, pokemonResults) => {
                       if (pokemonResults.rows.length > 0) {
                         const pokemonID = pokemonResults.rows._array[0].pokemonID;
-                        const userID = parsedUser.id; // Assuming parsedUser is defined
+                        const userID = parsedUser.id; 
   
-                        // Now, check if the Pokemon is already favorited by the user
                         tx.executeSql(
                           'SELECT * FROM UsersToPokemon WHERE pokemonID = ? AND userID = ?',
                           [pokemonID, userID],
@@ -142,7 +77,6 @@ const Search = () => {
                             if (favoriteResults.rows.length > 0) {
                               Alert.alert('Failure', 'Pokemon is already favorited');
                             } else {
-                              // If not already favorited, insert into UsersToPokemon
                               tx.executeSql(
                                 'INSERT INTO UsersToPokemon (userID, pokemonID) VALUES (?, ?)',
                                 [userID, pokemonID],
