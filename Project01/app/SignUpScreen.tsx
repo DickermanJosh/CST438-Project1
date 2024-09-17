@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { View, TextInput, Alert, Text, TouchableOpacity, Image } from 'react-native';
 import { db } from './db'; // Import your SQLite setup
-import { router } from 'expo-router';
+
 import { images } from '../constants';
+
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import { Redirect, router } from 'expo-router';
+
 
 const SignUpScreen = () => {
   const [username, setUsername] = useState<string>('');
