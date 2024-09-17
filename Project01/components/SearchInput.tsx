@@ -1,17 +1,12 @@
 import { Image, View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { usePathname, router } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';  // Using Picker for dropdown menu
-import { icons } from '../constants';
 
-const SearchInput = () => {
-    const pathname = usePathname();
-
-import { useState, useEffect } from 'react';
 import {icons} from '../constants'
-import { usePathname, router } from 'expo-router';
+
 import { useLocalSearchParams } from 'expo-router';
 
 
@@ -61,10 +56,9 @@ const SearchInput = () => {
                             router.setParams({ query, searchType });
                         } else {
                             // Sending the query & the type of search
-//                             router.push(`/search/${query}?searchType=${searchType}`);
+                            // router.push(`/search/${query}?searchType=${searchType}?user=${parsedUser}`);
                             router.push({
-                                pathname: `/search/${query}?searchType=${searchType}`, // Dynamic route
-                                params: { user: JSON.stringify(parsedUser) },
+                                pathname: `/search/${query}?searchType=${searchType}&user=${encodeURIComponent(JSON.stringify(parsedUser))}`,
                             });
                         }
                     }}

@@ -1,9 +1,5 @@
-import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
-import { View, Text, StyleSheet, Image, Alert } from 'react-native';
-import { useEffect, useState } from 'react';
 import { Slot, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
@@ -13,26 +9,29 @@ import { db } from '../db';
 import * as SQLite from 'expo-sqlite/legacy';
 
 const Search = () => {
-  const { query, searchType } = useLocalSearchParams();  // Get query and searchType from the route
+  const { query, searchType, user } = useLocalSearchParams();  // Get query and searchType from the route
   const [data, setData] = useState(null);
   const [isError, setIsError] = useState(false);
 
-  const { user } = useLocalSearchParams(); // Access query and user parameters
   const [parsedUser, setParsedUser] = useState(null);
 
   useEffect(() => {
     if (user) {
       let userData;
       if (Array.isArray(user)) {
-          userData = user[0];
+        userData = user[0]; // Take the first element of the array
       } else {
-          userData = user;
+        userData = user; // Otherwise, it's a string
       }
-
-      setParsedUser(JSON.parse(userData));
+      try {
+        const parsed = JSON.parse(decodeURIComponent(userData)); // Parse the user data
+        setParsedUser(parsed); // Set parsed user in state
+      } catch (error) {
+        console.error('Failed to parse user:', error);
       }
+    }
   }, [user]);
-  
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,6 +68,86 @@ const Search = () => {
       fetchData();  // Trigger API call when query is available
     }
   }, [query, searchType]);  // Re-run the effect if query or searchType changes
+
+  //Handle favorited pokemon
+  const handleFavorite = async () => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM pokemon WHERE name = ?',
+        [query], 
+        (tx, results) => {
+          if (results.rows.length > 0) {
+            Alert.alert('Failure', 'Pokemon already favorited');
+          } else {
+
+            if (data && parsedUser && data.sprites) {
+              tx.executeSql(
+                'INSERT INTO pokemon (name, picture) VALUES (?, ?)',
+                [query, data.sprites.front_default],
+                (tx, insertResult) => {
+
+                  tx.executeSql(
+                    'SELECT * FROM pokemon WHERE name = ?',
+                    [query], 
+                    (tx, pokemonResults) => {
+                      if (pokemonResults.rows.length > 0) {
+                        const pokemonID = pokemonResults.rows._array[0].pokemonID;
+                        const userID = parsedUser.id; 
+  
+                        tx.executeSql(
+                          'SELECT * FROM UsersToPokemon WHERE pokemonID = ? AND userID = ?',
+                          [pokemonID, userID],
+                          (tx, favoriteResults) => {
+                            if (favoriteResults.rows.length > 0) {
+                              Alert.alert('Failure', 'Pokemon is already favorited');
+                            } else {
+                              tx.executeSql(
+                                'INSERT INTO UsersToPokemon (userID, pokemonID) VALUES (?, ?)',
+                                [userID, pokemonID],
+                                (tx, results) => {
+                                  Alert.alert('Success', 'Pokemon added to user\'s favorites');
+                                  console.log("Insert successful");
+                                },
+                                (tx, error) => {
+                                  Alert.alert('Failure', 'Failed to add Pokemon to user\'s favorites');
+                                  console.error('Insert error:', error);
+                                  return false;
+                                }
+                              );
+                            }
+                          },
+                          (tx, error) => {
+                            Alert.alert('Failure', 'Error checking if Pokemon is favorited');
+                            console.error('Error checking favorite:', error);
+                            return false;
+                          }
+                        );
+                      } else {
+                        Alert.alert('Error', 'Failed to retrieve newly inserted Pokemon');
+                      }
+                    },
+                    (tx, error) => {
+                      Alert.alert('Failure', 'Error retrieving Pokemon after insert');
+                      console.error('Error retrieving Pokemon:', error);
+                    }
+                  );
+                },
+                (tx, error) => {
+                  Alert.alert('Failure', 'Error inserting new Pokemon');
+                  console.error('Insert error:', error);
+                  return false;
+                }
+              );
+            }
+          }
+        },
+        (tx, error) => {
+          Alert.alert('Error', 'Failed to check Pokemon existence');
+          console.error('Error checking Pokemon existence:', error);
+        }
+      );
+    });
+  };
 
   // Grid view for Type & Ability search returns
   const renderPokemonGrid = (pokemonList) => {
@@ -124,6 +203,12 @@ return (
               resizeMode="contain"
               testID="pokemon-sprite"  // Add testID for testing
             />
+            <CustomButton
+              title="Favorite"
+              // handlePress={() => {router.push('/home')}}
+              handlePress={handleFavorite}
+              containerStyles="w-full mt-7"
+            />
           </View>
         )}
 
@@ -134,105 +219,7 @@ return (
     )}
   </View>
 );
-   
-  const handleFavorite = async () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM pokemon WHERE name = ?',
-        [query], 
-        (tx, results) => {
-          if (results.rows.length > 0) {
-            Alert.alert('Failure', 'Pokemon already favorited');
-          } else {
-
-            if (data && parsedUser && data.sprites) {
-              tx.executeSql(
-                'INSERT INTO pokemon (name, picture) VALUES (?, ?)',
-                [query, data.sprites.front_default],
-                (tx, insertResult) => {
-
-                  tx.executeSql(
-                    'SELECT * FROM pokemon WHERE name = ?',
-                    [query], 
-                    (tx, pokemonResults) => {
-                      if (pokemonResults.rows.length > 0) {
-                        const pokemonID = pokemonResults.rows._array[0].pokemonID;
-                        const userID = parsedUser.id; 
   
-                        tx.executeSql(
-                          'SELECT * FROM UsersToPokemon WHERE pokemonID = ? AND userID = ?',
-                          [pokemonID, userID],
-                          (tx, favoriteResults) => {
-                            if (favoriteResults.rows.length > 0) {
-                              Alert.alert('Failure', 'Pokemon is already favorited');
-                            } else {
-                              tx.executeSql(
-                                'INSERT INTO UsersToPokemon (userID, pokemonID) VALUES (?, ?)',
-                                [userID, pokemonID],
-                                (tx, results) => {
-                                  Alert.alert('Success', 'Pokemon added to user\'s favorites');
-                                  console.log("Insert successful");
-                                },
-                                (tx, error) => {
-                                  Alert.alert('Failure', 'Failed to add Pokemon to user\'s favorites');
-                                  console.error('Insert error:', error);
-                                }
-                              );
-                            }
-                          },
-                          (tx, error) => {
-                            Alert.alert('Failure', 'Error checking if Pokemon is favorited');
-                            console.error('Error checking favorite:', error);
-                          }
-                        );
-                      } else {
-                        Alert.alert('Error', 'Failed to retrieve newly inserted Pokemon');
-                      }
-                    },
-                    (tx, error) => {
-                      Alert.alert('Failure', 'Error retrieving Pokemon after insert');
-                      console.error('Error retrieving Pokemon:', error);
-                    }
-                  );
-                },
-                (tx, error) => {
-                  Alert.alert('Failure', 'Error inserting new Pokemon');
-                  console.error('Insert error:', error);
-                  return false;
-                }
-              );
-            }
-          }
-        },
-        (tx, error) => {
-          Alert.alert('Error', 'Failed to check Pokemon existence');
-          console.error('Error checking Pokemon existence:', error);
-        }
-      );
-    });
-  };
-  
-
-  return (
-    <SafeAreaView className='bg-primary h-full'>
-      <Text className='text-3xl text-white text-center'>{query}</Text>
-      {data && data.sprites && (
-        <View className='mt-1.5 flex items-center justify-center'>
-          <Image
-            source={{ uri: data.sprites.front_default }}
-            style={{ width: 200, height: 200 }} 
-            resizeMode="contain"
-          />
-        </View>
-      )}
-      <CustomButton
-        title="Favorite"
-        // handlePress={() => {router.push('/home')}}
-        handlePress={handleFavorite}
-        containerStyles="w-full mt-7"
-      />
-    </SafeAreaView>
-  );
 };
 
 const styles = StyleSheet.create({
