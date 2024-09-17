@@ -1,12 +1,33 @@
 import { Image, View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Alert} from 'react-native';
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {icons} from '../constants'
 import { usePathname, router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
 
 const SearchInput = () => {
+    const { user } = useLocalSearchParams();  
+    const [parsedUser, setParsedUser] = useState(null);
+
+  // Get users information from login page
+    useEffect(() => {
+        if (user) {
+        let userData;
+        if (Array.isArray(user)) {
+            userData = user[0];
+        } else {
+            userData = user;
+        }
+
+        // console.log(user);
+        // console.log("hello");
+        setParsedUser(JSON.parse(userData));
+        // console.log(parsedUser);
+        }
+    }, [user]);
+
     const pathname = usePathname()
     const [query, setQuery] = useState('');
     return (
@@ -24,9 +45,13 @@ const SearchInput = () => {
                     if(!query){
                         return Alert.alert("missing query", "Pease input something")
                     }
-                    if(pathname.startsWith('/search')) router. setParams({query})
-                    else router.push(`/search/${query}`)
-
+                    // if(pathname.startsWith('/search')) router. setParams({query})
+                    // else router.push(`/search/${query}`)
+                    // Use router.push to navigate and pass parameters
+                    router.push({
+                        pathname: `/search/${query}`, // Dynamic route
+                        params: { user: JSON.stringify(parsedUser) },
+                    });
                 }}
             >
                 <Image

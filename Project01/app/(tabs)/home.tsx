@@ -1,9 +1,10 @@
 import React from 'react';
 import { Image, View, Text, StyleSheet, FlatList} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { useLocalSearchParams } from 'expo-router';
 import {images} from '../../constants'
 import SearchInput from '../../components/SearchInput'
+import { useEffect, useState } from 'react';
 
 
 const Home = () => {
