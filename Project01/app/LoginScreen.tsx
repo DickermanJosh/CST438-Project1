@@ -6,7 +6,8 @@ import { Redirect, router } from 'expo-router';
 import { db } from './db'; // Import your SQLite setup
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
- import { images } from '../constants';
+import { images } from '../constants';
+import { useRoute } from '@react-navigation/native';
 import SignUpScreen from './SignUpScreen';
 
 
