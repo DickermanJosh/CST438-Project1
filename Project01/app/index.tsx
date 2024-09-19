@@ -12,6 +12,8 @@ import Home from './Home';
 
 import{images} from "../constants";
 import CustomButton from "@/components/CustomButton";
+
+import { UserProvider } from './userContext';
   
 // Create a Stack navigator
 const Stack = createNativeStackNavigator();
@@ -21,6 +23,7 @@ export default function App() {
     // The NavigationContainer wraps the entire navigation structure
     // Stack navigator from loginPage merge
     <>
+    <UserProvider>
       <Stack.Navigator initialRouteName="Login">        
         <Stack.Screen
           name="Login"
@@ -74,6 +77,7 @@ export default function App() {
       </ScrollView>
       <StatusBar backgroundColor="#161622" style='light'/>
     </SafeAreaView>
+    </UserProvider>
     </>
   );
 }

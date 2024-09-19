@@ -95,8 +95,51 @@ const deletePokemonByName = async (name: string) => {
     });
 };
 
+const getPokemonListByUserId = async (userId: number) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT pokemonID FROM UsersToPokemon WHERE UserID = ?',
+        [userId],
+        (tx, results) => {
+          const pokemonIds = [];
+          for (let i = 0; i < results.rows.length; i++) {
+            pokemonIds.push(results.rows.item(i).pokemonID);
+          }
+          resolve(pokemonIds);
+        },
+        (tx, error) => {
+          console.log(`Error finding Pokémon for user ID: ${userId}`, error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+const getPokemonById = async (id: number) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM pokemon WHERE pokemonID = ?',
+        [id],
+        (tx, results) => {
+          if (results.rows.length > 0) {
+            resolve(results.rows.item(0));
+          } else {
+            resolve(null);
+          }
+        },
+        (tx, error) => {
+          console.log(`Error finding Pokémon with id: ${id}`, error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
 createPokemonTable()
   .then(() => listAllPokemon())
   .catch(err => console.error(err));
 
-export { createPokemonTable, listAllPokemon, addPokemon, deletePokemonByID, deletePokemonByName };
+export { getPokemonListByUserId, getPokemonById, createPokemonTable, listAllPokemon, addPokemon, deletePokemonByID, deletePokemonByName };
