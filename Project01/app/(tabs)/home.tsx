@@ -25,9 +25,9 @@ const Home = () => {
       <FlatList
         data={[{ id:1 }]}
         keyExtractor={(item) => item.id.toString() }
-        renderItem={({item}) => (
-          <Text className="text-3xl text-white">{parsedUser.id}</Text>
-        )}
+        // renderItem={({item}) => (
+        //   // <Text className="text-3xl text-white">{parsedUser.id}</Text>
+        // )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
             <View className="justify-between items-start flex-row mb-6">
