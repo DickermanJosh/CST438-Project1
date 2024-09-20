@@ -1,9 +1,6 @@
 import { View, Text, Image, FlatList, StyleSheet, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Slot, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import axios from 'axios';
-import {images} from '../../constants'
+import { useLocalSearchParams } from 'expo-router';
 import CustomButton from "@/components/CustomButton";
 import { db } from '../db';
 import * as SQLite from 'expo-sqlite/legacy';
@@ -12,7 +9,6 @@ const Search = () => {
   const { query, searchType, user } = useLocalSearchParams();  // Get query and searchType from the route
   const [data, setData] = useState(null);
   const [isError, setIsError] = useState(false);
-
   const [parsedUser, setParsedUser] = useState(null);
 
   useEffect(() => {
@@ -31,7 +27,6 @@ const Search = () => {
       }
     }
   }, [user]);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,33 +62,31 @@ const Search = () => {
     if (query) {
       fetchData();  // Trigger API call when query is available
     }
-  }, [query, searchType]);  // Re-run the effect if query or searchType changes
+  }, [query, searchType]);
 
-  //Handle favorited pokemon
-  const handleFavorite = async () => {
+  // Handle favoriting a Pokémon
+  const handleFavorite = async (pokemonName, pokemonImageUrl) => {
     db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM pokemon WHERE name = ?',
-        [query], 
+        [pokemonName],
         (tx, results) => {
           if (results.rows.length > 0) {
             Alert.alert('Failure', 'Pokemon already favorited');
           } else {
-
-            if (data && parsedUser && data.sprites) {
+            if (parsedUser) {
               tx.executeSql(
                 'INSERT INTO pokemon (name, picture) VALUES (?, ?)',
-                [query, data.sprites.front_default],
+                [pokemonName, pokemonImageUrl],
                 (tx, insertResult) => {
-
                   tx.executeSql(
                     'SELECT * FROM pokemon WHERE name = ?',
-                    [query], 
+                    [pokemonName],
                     (tx, pokemonResults) => {
                       if (pokemonResults.rows.length > 0) {
                         const pokemonID = pokemonResults.rows._array[0].pokemonID;
-                        const userID = parsedUser.id; 
-  
+                        const userID = parsedUser.id;
+
                         tx.executeSql(
                           'SELECT * FROM UsersToPokemon WHERE pokemonID = ? AND userID = ?',
                           [pokemonID, userID],
@@ -176,6 +169,11 @@ const Search = () => {
                 resizeMode="contain"
               />
               <Text style={styles.pokemonName}>{pokemonName}</Text>
+              <CustomButton
+                title="Favorite"
+                handlePress={() => handleFavorite(pokemonName, pokemonImageUrl)}  // Pass Pokémon details to handleFavorite
+                containerStyles="w-full mt-7"
+              />
             </View>
           );
         }}
@@ -183,43 +181,41 @@ const Search = () => {
     );
   };
 
-return (
-  <View style={styles.container}>
-    <Text style={styles.heading}>
-      {searchType.charAt(0).toUpperCase() + searchType.slice(1)}: {query}
-    </Text>
+  return (
+    <View style={styles.container}>
+      <Text style={styles.heading}>
+        {searchType.charAt(0).toUpperCase() + searchType.slice(1)}: {query}
+      </Text>
 
-    {/* Handle different search types */}
-    {isError ? (
-      <Text style={styles.errorText}>No results found. Please check your query and try again.</Text>
-    ) : data && (
-      <View>
-        {/* If searching by name, show the Pokemon's sprite */}
-        {searchType === 'name' && data.sprites && (
-          <View style={styles.centered}>
-            <Image
-              source={{ uri: data.sprites.front_default }}
-              style={styles.pokemonImageLarge}
-              resizeMode="contain"
-              testID="pokemon-sprite"  // Add testID for testing
-            />
-            <CustomButton
-              title="Favorite"
-              // handlePress={() => {router.push('/home')}}
-              handlePress={handleFavorite}
-              containerStyles="w-full mt-7"
-            />
-          </View>
-        )}
+      {/* Handle different search types */}
+      {isError ? (
+        <Text style={styles.errorText}>No results found. Please check your query and try again.</Text>
+      ) : data && (
+        <View>
+          {/* If searching by name, show the Pokemon's sprite */}
+          {searchType === 'name' && data.sprites && (
+            <View style={styles.centered}>
+              <Image
+                source={{ uri: data.sprites.front_default }}
+                style={styles.pokemonImageLarge}
+                resizeMode="contain"
+                testID="pokemon-sprite"  // Add testID for testing
+              />
+              <CustomButton
+                title="Favorite"
+                handlePress={() => handleFavorite(query, data.sprites.front_default)}
+                containerStyles="w-full mt-7"
+              />
+            </View>
+          )}
 
-        {/* If searching by ability or type, show a grid of Pokemon */}
-        {searchType === 'ability' && data.pokemon && renderPokemonGrid(data.pokemon)}
-        {searchType === 'type' && data.pokemon && renderPokemonGrid(data.pokemon)}
-      </View>
-    )}
-  </View>
-);
-  
+          {/* If searching by ability or type, show a grid of Pokemon */}
+          {searchType === 'ability' && data.pokemon && renderPokemonGrid(data.pokemon)}
+          {searchType === 'type' && data.pokemon && renderPokemonGrid(data.pokemon)}
+        </View>
+      )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

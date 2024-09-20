@@ -27,7 +27,7 @@ const Profile = () => {
 
       {/* Custom Button */}
       <TouchableOpacity 
-        className="mt-6 bg-secondary-100 rounded-lg w-full" 
+        className="mt-6 bg-secondary-100 rounded-lg w-60" 
         onPress={handleLogout} 
         style={{ padding: 15, alignItems: 'center', borderRadius: 10 }}
       >
